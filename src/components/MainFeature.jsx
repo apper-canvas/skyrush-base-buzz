@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'react-toastify'
 import ApperIcon from './ApperIcon'
+import Chart from 'react-apexcharts'
 
 const MainFeature = () => {
   // Game state
@@ -25,6 +26,7 @@ const MainFeature = () => {
   // Countdown state
   const [countdown, setCountdown] = useState(0)
   const [roundDuration, setRoundDuration] = useState(0)
+const [flightData, setFlightData] = useState([])
 
   // Start new round
   const startNewRound = () => {
@@ -33,6 +35,7 @@ const MainFeature = () => {
     setCurrentBet(null)
     setCountdown(5)
     setRoundDuration(0)
+setFlightData([])
     
     // Countdown timer
     const countdownInterval = setInterval(() => {
@@ -50,6 +53,7 @@ const MainFeature = () => {
   const startFlying = () => {
     setGameState('flying')
     setRoundDuration(0)
+setFlightData([{ x: 0, y: 1.0 }])
     
     // Random crash point between 1.1x and 10x
     const crashPoint = Math.random() * (10 - 1.1) + 1.1
@@ -60,6 +64,8 @@ const MainFeature = () => {
         const newMultiplier = 1 + (newDuration / 1000) * 0.5 + Math.random() * 0.1
         
         setMultiplier(newMultiplier)
+// Add data point to flight trajectory
+        setFlightData(prevData => [...prevData, { x: newDuration / 1000, y: newMultiplier }])
         
         if (newMultiplier >= crashPoint) {
           crashGame(newMultiplier)
@@ -75,6 +81,8 @@ const MainFeature = () => {
     clearInterval(gameInterval.current)
     setGameState('crashed')
     setMultiplier(finalMultiplier)
+// Add final crash point to flight data
+    setFlightData(prevData => [...prevData, { x: roundDuration / 1000, y: finalMultiplier }])
     
     // Add to history
     setRoundHistory(prev => [finalMultiplier, ...prev.slice(0, 4)])
@@ -331,6 +339,110 @@ const placeBet = () => {
               <div className="text-6xl">💥</div>
             </motion.div>
           )}
+        </motion.div>
+{/* Flight Trajectory Graph */}
+        <motion.div 
+          className="game-card"
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        >
+          <h3 className="text-white font-semibold mb-4 flex items-center">
+            <ApperIcon name="TrendingUp" className="w-5 h-5 mr-2" />
+            Flight Trajectory
+          </h3>
+          <div className="h-48 sm:h-64">
+            <Chart
+              options={{
+                chart: {
+                  type: 'line',
+                  toolbar: { show: false },
+                  background: 'transparent',
+                  animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 300,
+                    animateGradually: {
+                      enabled: true,
+                      delay: 50
+                    }
+                  }
+                },
+                theme: {
+                  mode: 'dark'
+                },
+                grid: {
+                  borderColor: '#475569',
+                  strokeDashArray: 3
+                },
+                xaxis: {
+                  type: 'numeric',
+                  title: {
+                    text: 'Time (seconds)',
+                    style: { color: '#94a3b8' }
+                  },
+                  labels: {
+                    style: { colors: '#94a3b8' }
+                  }
+                },
+                yaxis: {
+                  title: {
+                    text: 'Multiplier',
+                    style: { color: '#94a3b8' }
+                  },
+                  labels: {
+                    style: { colors: '#94a3b8' },
+                    formatter: (value) => `${value.toFixed(2)}x`
+                  },
+                  min: 1
+                },
+                stroke: {
+                  curve: 'smooth',
+                  width: 3,
+                  colors: gameState === 'crashed' ? ['#ef4444'] : ['#f59e0b']
+                },
+                fill: {
+                  type: 'gradient',
+                  gradient: {
+                    shade: 'dark',
+                    type: 'horizontal',
+                    shadeIntensity: 0.5,
+                    gradientToColors: gameState === 'crashed' ? ['#dc2626'] : ['#eab308'],
+                    stops: [0, 100]
+                  }
+                },
+                markers: {
+                  size: gameState === 'crashed' && flightData.length > 0 ? [0, 8] : 0,
+                  colors: ['#ef4444'],
+                  strokeColors: '#ffffff',
+                  strokeWidth: 2
+                },
+                tooltip: {
+                  theme: 'dark',
+                  style: {
+                    backgroundColor: '#1e293b'
+                  },
+                  custom: function({ series, seriesIndex, dataPointIndex, w }) {
+                    const data = flightData[dataPointIndex];
+                    if (!data) return '';
+                    return `
+                      <div class="p-2 bg-surface-800 border border-surface-700 rounded">
+                        <div class="text-white font-bold">${data.y.toFixed(2)}x</div>
+                        <div class="text-surface-400 text-sm">${data.x.toFixed(1)}s</div>
+                      </div>
+                    `;
+                  }
+                },
+                legend: { show: false }
+              }}
+              series={[{
+                name: 'Multiplier',
+                data: flightData
+              }]}
+              type="line"
+              height="100%"
+            />
+          </div>
         </motion.div>
 
         {/* Betting Panel */}
