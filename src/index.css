@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@layer base {
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui;
+  }
+  
+  body {
+    margin: 0;
+    padding: 0;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variant-numeric: 'tabular-nums';
+  }
+  
+  * {
+    box-sizing: border-box;
+  }
+}
+
+@layer components {
+  .game-button {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 active:scale-95 shadow-lg;
+  }
+  
+  .bet-button {
+    @apply bg-gradient-to-r from-primary to-primary-light text-white game-button hover:shadow-glow;
+  }
+  
+  .cashout-button {
+    @apply bg-gradient-to-r from-success to-emerald-500 text-white game-button hover:shadow-glow;
+  }
+  
+  .danger-button {
+    @apply bg-gradient-to-r from-accent to-red-500 text-white game-button hover:shadow-glow;
+  }
+  
+  .game-card {
+    @apply bg-surface-800 border border-surface-700 rounded-2xl p-6 shadow-neu-dark backdrop-blur-sm;
+  }
+  
+  .multiplier-display {
+    @apply text-6xl font-bold bg-gradient-to-r from-secondary to-yellow-400 bg-clip-text text-transparent;
+  }
+  
+  .input-field {
+    @apply bg-surface-700 border border-surface-600 rounded-xl px-4 py-3 text-white placeholder-surface-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-200;
+  }
+}
+
+@layer utilities {
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+  
+  .glow-text {
+    text-shadow: 0 0 10px currentColor;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Responsive text scaling */
+@media (max-width: 640px) {
+  .multiplier-display {
+    @apply text-4xl;
+  }
+}
+
+/* Game canvas styling */
+.game-canvas {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-canvas::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Animated gradient background */
+.animated-bg {
+  background: linear-gradient(-45deg, #1e293b, #334155, #475569, #1e293b);
+  background-size: 400% 400%;
+  animation: gradientShift 8s ease infinite;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
