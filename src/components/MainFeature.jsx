@@ -188,49 +188,135 @@ const MainFeature = () => {
             </AnimatePresence>
           </div>
 
-          {/* Animated Plane */}
+{/* Animated Plane */}
           <div className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12">
             <motion.div
               ref={planeRef}
               animate={
                 gameState === 'flying' 
                   ? { 
-                      x: [0, 100, 200, 300],
-                      y: [0, -50, -100, -150],
-                      rotate: [-10, -15, -20, -25]
+                      x: [0, 80, 180, 300, 450],
+                      y: [0, -40, -120, -180, -250],
+                      rotate: [-5, -12, -18, -22, -30],
+                      scale: [1, 1.1, 1.2, 1.15, 1.3]
                     }
                   : gameState === 'crashed'
                   ? {
-                      rotate: [0, 180],
-                      y: [0, 100],
-                      opacity: [1, 0]
+                      x: [450, 480, 520],
+                      y: [-250, -200, 50],
+                      rotate: [-30, 45, 180],
+                      scale: [1.3, 1.5, 0.8],
+                      opacity: [1, 0.8, 0.2]
                     }
-                  : {}
+                  : {
+                      x: 0,
+                      y: 0,
+                      rotate: -5,
+                      scale: 1,
+                      opacity: 1
+                    }
               }
               transition={{
-                duration: gameState === 'flying' ? 8 : gameState === 'crashed' ? 0.5 : 0,
-                ease: gameState === 'flying' ? 'easeOut' : 'easeIn'
+                duration: gameState === 'flying' 
+                  ? Math.max(3, roundDuration / 300)
+                  : gameState === 'crashed' 
+                  ? 1.2 
+                  : 0.8,
+                ease: gameState === 'flying' 
+                  ? [0.25, 0.46, 0.45, 0.94]
+                  : gameState === 'crashed' 
+                  ? [0.25, 0.46, 0.45, 0.94]
+                  : "easeOut",
+                times: gameState === 'flying' 
+                  ? [0, 0.2, 0.5, 0.8, 1]
+                  : gameState === 'crashed'
+                  ? [0, 0.3, 1]
+                  : [0, 1]
               }}
-              className="text-4xl sm:text-6xl"
+              className="text-4xl sm:text-6xl filter drop-shadow-lg"
             >
               ✈️
             </motion.div>
           </div>
 
-          {/* Trail Effect */}
+          {/* Enhanced Trail Effects */}
           {gameState === 'flying' && (
+            <>
+              {/* Main Trail */}
+              <motion.div
+                className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12"
+                animate={{
+                  x: [0, 80, 180, 300, 450],
+                  y: [0, -40, -120, -180, -250]
+                }}
+                transition={{
+                  duration: Math.max(3, roundDuration / 300),
+                  ease: [0.25, 0.46, 0.45, 0.94],
+                  times: [0, 0.2, 0.5, 0.8, 1]
+                }}
+              >
+                <motion.div
+                  className="w-3 h-3 bg-gradient-to-r from-orange-400 to-red-500 rounded-full"
+                  animate={{
+                    scale: [0.5, 1.2, 0.8, 1.5, 0.3],
+                    opacity: [0.3, 0.8, 0.6, 0.9, 0.2]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+              </motion.div>
+              
+              {/* Secondary Trail Particles */}
+              {[...Array(3)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12"
+                  animate={{
+                    x: [0, 80, 180, 300, 450],
+                    y: [0, -40, -120, -180, -250]
+                  }}
+                  transition={{
+                    duration: Math.max(3, roundDuration / 300),
+                    ease: [0.25, 0.46, 0.45, 0.94],
+                    times: [0, 0.2, 0.5, 0.8, 1],
+                    delay: i * 0.2
+                  }}
+                >
+                  <motion.div
+                    className="w-1 h-1 bg-yellow-400 rounded-full"
+                    animate={{
+                      scale: [0, 1, 0],
+                      opacity: [0, 0.6, 0]
+                    }}
+                    transition={{
+                      duration: 0.8 + i * 0.2,
+                      repeat: Infinity,
+                      ease: "easeOut"
+                    }}
+                  />
+                </motion.div>
+              ))}
+            </>
+          )}
+
+          {/* Crash Effect */}
+          {gameState === 'crashed' && (
             <motion.div
-              className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12 w-2 h-2 bg-secondary rounded-full"
-              animate={{
-                scale: [0, 1, 0],
-                opacity: [0, 1, 0]
+              className="absolute"
+              style={{ left: '480px', top: 'calc(100% - 180px)' }}
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ 
+                scale: [0, 2, 1.5], 
+                opacity: [0, 1, 0.7],
+                rotate: [0, 180, 360]
               }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-            />
+              transition={{ duration: 1, ease: "easeOut" }}
+            >
+              <div className="text-6xl">💥</div>
+            </motion.div>
           )}
         </motion.div>
 
