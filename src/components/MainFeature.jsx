@@ -91,9 +91,24 @@ const MainFeature = () => {
     }, 3000)
   }
 
-  const placeBet = () => {
-    if (gameState !== 'waiting' || betAmount > balance || betAmount < 1) {
-      toast.error('Cannot place bet right now')
+const placeBet = () => {
+    if (gameState !== 'waiting') {
+      toast.error('Cannot place bet while game is in progress')
+      return
+    }
+    
+    if (betAmount > balance) {
+      toast.error('Insufficient balance')
+      return
+    }
+    
+    if (betAmount < 1) {
+      toast.error('Minimum bet is $1')
+      return
+    }
+    
+    if (currentBet && !currentBet.cashedOut) {
+      toast.error('You already have an active bet')
       return
     }
     
@@ -338,7 +353,7 @@ const MainFeature = () => {
                   <input
                     type="number"
                     value={betAmount}
-                    onChange={(e) => setBetAmount(Math.max(1, parseInt(e.target.value) || 1))}
+onChange={(e) => setBetAmount(Math.max(1, Math.min(balance, parseInt(e.target.value) || 1)))}
                     className="input-field pl-8 w-full"
                     min="1"
                     max={balance}
@@ -363,7 +378,7 @@ const MainFeature = () => {
                 {quickBets.map(amount => (
                   <button
                     key={amount}
-                    onClick={() => setBetAmount(amount)}
+onClick={() => setBetAmount(Math.min(amount, balance))}
                     className="px-3 py-1 text-xs bg-surface-700 text-white rounded-lg hover:bg-surface-600 transition-colors"
                   >
                     ${amount}
@@ -377,7 +392,7 @@ const MainFeature = () => {
               {!currentBet || currentBet.cashedOut ? (
                 <button
                   onClick={placeBet}
-                  disabled={gameState !== 'waiting' || betAmount > balance}
+disabled={gameState !== 'waiting' || betAmount > balance || betAmount < 1}
                   className="bet-button disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   <ApperIcon name="Plane" className="w-5 h-5 mr-2" />
