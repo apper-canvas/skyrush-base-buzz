@@ -339,109 +339,94 @@ const placeBet = () => {
               <div className="text-6xl">💥</div>
             </motion.div>
           )}
-        </motion.div>
-{/* Flight Trajectory Graph */}
-        <motion.div 
-          className="game-card"
-          initial={{ y: 50, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <h3 className="text-white font-semibold mb-4 flex items-center">
-            <ApperIcon name="TrendingUp" className="w-5 h-5 mr-2" />
-            Flight Trajectory
-          </h3>
-          <div className="h-48 sm:h-64">
-            <Chart
-              options={{
-                chart: {
-                  type: 'line',
-                  toolbar: { show: false },
-                  background: 'transparent',
-                  animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 300,
-                    animateGradually: {
+{/* Flight Trajectory Graph Overlay */}
+          <div className="absolute bottom-4 left-4 right-4 h-32 bg-surface-800/90 backdrop-blur-sm border border-surface-700 rounded-lg p-3">
+            <div className="flex items-center mb-2">
+              <ApperIcon name="TrendingUp" className="w-4 h-4 mr-2 text-surface-300" />
+              <span className="text-surface-300 text-sm font-medium">Flight Trajectory</span>
+            </div>
+            <div className="h-20">
+              <Chart
+                options={{
+                  chart: {
+                    type: 'line',
+                    toolbar: { show: false },
+                    background: 'transparent',
+                    animations: {
                       enabled: true,
-                      delay: 50
+                      easing: 'easeinout',
+                      speed: 300,
+                      animateGradually: {
+                        enabled: true,
+                        delay: 50
+                      }
                     }
-                  }
-                },
-                theme: {
-                  mode: 'dark'
-                },
-                grid: {
-                  borderColor: '#475569',
-                  strokeDashArray: 3
-                },
-                xaxis: {
-                  type: 'numeric',
-                  title: {
-                    text: 'Time (seconds)',
-                    style: { color: '#94a3b8' }
                   },
-                  labels: {
-                    style: { colors: '#94a3b8' }
-                  }
-                },
-                yaxis: {
-                  title: {
-                    text: 'Multiplier',
-                    style: { color: '#94a3b8' }
+                  theme: {
+                    mode: 'dark'
                   },
-                  labels: {
-                    style: { colors: '#94a3b8' },
-                    formatter: (value) => `${value.toFixed(2)}x`
+                  grid: {
+                    borderColor: '#475569',
+                    strokeDashArray: 3,
+                    show: true,
+                    xaxis: {
+                      lines: { show: false }
+                    },
+                    yaxis: {
+                      lines: { show: true }
+                    }
                   },
-                  min: 1
-                },
-                stroke: {
-                  curve: 'smooth',
-                  width: 3,
-                  colors: gameState === 'crashed' ? ['#ef4444'] : ['#f59e0b']
-                },
-                fill: {
-                  type: 'gradient',
-                  gradient: {
-                    shade: 'dark',
-                    type: 'horizontal',
-                    shadeIntensity: 0.5,
-                    gradientToColors: gameState === 'crashed' ? ['#dc2626'] : ['#eab308'],
-                    stops: [0, 100]
-                  }
-                },
-                markers: {
-                  size: gameState === 'crashed' && flightData.length > 0 ? [0, 8] : 0,
-                  colors: ['#ef4444'],
-                  strokeColors: '#ffffff',
-                  strokeWidth: 2
-                },
-                tooltip: {
-                  theme: 'dark',
-                  style: {
-                    backgroundColor: '#1e293b'
+                  xaxis: {
+                    type: 'numeric',
+                    labels: {
+                      show: false
+                    },
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
                   },
-                  custom: function({ series, seriesIndex, dataPointIndex, w }) {
-                    const data = flightData[dataPointIndex];
-                    if (!data) return '';
-                    return `
-                      <div class="p-2 bg-surface-800 border border-surface-700 rounded">
-                        <div class="text-white font-bold">${data.y.toFixed(2)}x</div>
-                        <div class="text-surface-400 text-sm">${data.x.toFixed(1)}s</div>
-                      </div>
-                    `;
-                  }
-                },
-                legend: { show: false }
-              }}
-              series={[{
-                name: 'Multiplier',
-                data: flightData
-              }]}
-              type="line"
-              height="100%"
-            />
+                  yaxis: {
+                    labels: {
+                      style: { colors: '#94a3b8', fontSize: '10px' },
+                      formatter: (value) => `${value.toFixed(1)}x`
+                    },
+                    min: 1,
+                    axisBorder: { show: false },
+                    axisTicks: { show: false }
+                  },
+                  stroke: {
+                    curve: 'smooth',
+                    width: 2,
+                    colors: gameState === 'crashed' ? ['#ef4444'] : ['#f59e0b']
+                  },
+                  fill: {
+                    type: 'gradient',
+                    gradient: {
+                      shade: 'dark',
+                      type: 'horizontal',
+                      shadeIntensity: 0.3,
+                      gradientToColors: gameState === 'crashed' ? ['#dc2626'] : ['#eab308'],
+                      stops: [0, 100]
+                    }
+                  },
+                  markers: {
+                    size: gameState === 'crashed' && flightData.length > 0 ? [0, 6] : 0,
+                    colors: ['#ef4444'],
+                    strokeColors: '#ffffff',
+                    strokeWidth: 1
+                  },
+                  tooltip: {
+                    enabled: false
+                  },
+                  legend: { show: false }
+                }}
+                series={[{
+                  name: 'Multiplier',
+                  data: flightData
+                }]}
+                type="line"
+                height="100%"
+              />
+            </div>
           </div>
         </motion.div>
 
