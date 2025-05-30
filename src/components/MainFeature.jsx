@@ -204,24 +204,24 @@ const placeBet = () => {
           </div>
 
 {/* Animated Plane */}
-          <div className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12">
+<div className="absolute bottom-8 left-8 sm:bottom-12 sm:left-12">
             <motion.div
               ref={planeRef}
               animate={
                 gameState === 'flying' 
                   ? { 
-                      x: [0, 80, 180, 300, 450],
-                      y: [0, -40, -120, -180, -250],
-                      rotate: [-5, -12, -18, -22, -30],
-                      scale: [1, 1.1, 1.2, 1.15, 1.3]
+                      x: multiplier * 60 + (multiplier - 1) * 100,
+                      y: -(multiplier * 40 + Math.pow(multiplier - 1, 1.5) * 60),
+                      rotate: Math.min(-35, -5 - (multiplier - 1) * 8),
+                      scale: 1 + (multiplier - 1) * 0.1
                     }
                   : gameState === 'crashed'
                   ? {
-                      x: [450, 480, 520],
-                      y: [-250, -200, 50],
-                      rotate: [-30, 45, 180],
-                      scale: [1.3, 1.5, 0.8],
-                      opacity: [1, 0.8, 0.2]
+                      x: multiplier * 60 + (multiplier - 1) * 100 + 50,
+                      y: -(multiplier * 40 + Math.pow(multiplier - 1, 1.5) * 60) + 200,
+                      rotate: [Math.min(-35, -5 - (multiplier - 1) * 8), 45, 180, 270],
+                      scale: [1 + (multiplier - 1) * 0.1, 1.4, 0.8, 0.3],
+                      opacity: [1, 0.8, 0.4, 0.1]
                     }
                   : {
                       x: 0,
@@ -233,22 +233,20 @@ const placeBet = () => {
               }
               transition={{
                 duration: gameState === 'flying' 
-                  ? Math.max(3, roundDuration / 300)
+                  ? 0.1
                   : gameState === 'crashed' 
-                  ? 1.2 
-                  : 0.8,
+                  ? 1.5 
+                  : 0.6,
                 ease: gameState === 'flying' 
                   ? [0.25, 0.46, 0.45, 0.94]
                   : gameState === 'crashed' 
-                  ? [0.25, 0.46, 0.45, 0.94]
+                  ? [0.68, -0.55, 0.265, 1.55]
                   : "easeOut",
-                times: gameState === 'flying' 
-                  ? [0, 0.2, 0.5, 0.8, 1]
-                  : gameState === 'crashed'
-                  ? [0, 0.3, 1]
-                  : [0, 1]
+                times: gameState === 'crashed' ? [0, 0.3, 0.7, 1] : undefined
               }}
-              className="text-4xl sm:text-6xl filter drop-shadow-lg"
+              className={`text-4xl sm:text-6xl filter drop-shadow-lg transition-all ${
+                gameState === 'waiting' ? 'animate-gentle-float' : ''
+              }`}
             >
               ✈️
             </motion.div>
